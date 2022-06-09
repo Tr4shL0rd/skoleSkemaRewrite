@@ -2,7 +2,6 @@ import json
 import datetime
 from sys import argv
 from rich import print as rprint
-from rich.markup import escape
 from rich.console import Console
 from rich.table import Table
 from tools.helper import ordinal
@@ -11,12 +10,10 @@ from tools.helper import correcter
 from tools.helper import monthNumber
 
 def main():
-    lectureFile = "lectures.json"
     date = datetime.datetime.now()
     dateYear  = date.year
     dateMonth = date.month
     dateDay   = date.day
-
     currentTime = str(datetime.datetime.now())[11:16]
     correctedTime = correcter(str(datetime.datetime.now())[11:16])
     weekdays = {
@@ -28,10 +25,7 @@ def main():
         6: "lørdag",
         0: "søndag"
     }
-
     day = weekdays[datetime.datetime.now().weekday()]
-
-    marker = "[cyan]<---- HERE[/cyan]"
     paddings = {
         "horizontal": "━",
         "vertical": "┃",
@@ -52,23 +46,29 @@ def main():
     print(f"┃{ordinal(dateDay)} of {monthNumber(dateMonth)}{' '*3}{dateYear}  ┃") 
     print(f"┗{'━'*20}{'┛'}")
     splitter = f"\n{paddings['lineConnecterLeft']}{paddings['lineSplitter']*13}{paddings['lineConnecter']}{paddings['lineSplitter']*12}{paddings['lineConnecterRight']}"
-    with open(lectureFile, "r") as lectureFile:
+
+    with open("lectures.json", "r") as lectureFile:
         lectures = json.loads(lectureFile.read())
+        currentLecture = ""
         print(f"{paddings['leftSideTop']}{paddings['horizontal']*13}{paddings['connecterTop']}{paddings['horizontal']*12}{paddings['rightSideTop']}")
         for k,v in lectures[day].items():
             prettyK = f"{paddings['vertical']}{k}{paddings['vertical']}"
+
             if v.strip() not in ["pause","runde"]:
                 if k == correctedTime:
                     rprint(f"{prettyK} [cyan]{v}[/cyan]{paddings['vertical']}{splitter}")    
+                    currentLecture = v
                     continue
                 rprint(f"{prettyK} [blue]{v}[/blue]{paddings['vertical']}{splitter}")
+            
             if v.strip() in ["pause","runde"]:
                 if k == correctedTime:
                     rprint(f"{prettyK} [cyan]{v}[/cyan]{paddings['vertical']}{splitter}")    
+                    currentLecture = v
                     continue
                 rprint(f"{prettyK} [red]{v}[/red]{paddings['vertical']}{splitter}")
         print(f"{paddings['leftSideBot']}{paddings['horizontal']*13}{paddings['connecterBot']}{paddings['horizontal']*12}{paddings['rightSideBot']}")
-
+    return currentLecture 
 
 colorCommands = ["-c", "--color","--colors", "c", "color", "colors"]
 helpCommands  = ["-h", "--help", "h", "help"]
