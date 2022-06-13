@@ -10,22 +10,6 @@ from tools.helper import correcter
 from tools.helper import monthNumber
 
 def main():
-    date = datetime.datetime.now()
-    dateYear  = date.year
-    dateMonth = date.month
-    dateDay   = date.day
-    currentTime = str(datetime.datetime.now())[11:16]
-    correctedTime = correcter(str(datetime.datetime.now())[11:16])
-    weekdays = {
-        1: "mandag",
-        2: "tirsdag",
-        3: "onsdag",
-        4: "torsdag",
-        5: "fredag",
-        6: "lørdag",
-        0: "søndag"
-    }
-    day = weekdays[datetime.datetime.now().weekday()]
     paddings = {
         "horizontal": "━",
         "vertical": "┃",
@@ -40,11 +24,59 @@ def main():
         "lineConnecterRight": "┨",
         "lineConnecterLeft": "┠"
     }
-    print(f"┏{'━'*20}{'┓'}")
-    print(f"┃{translate(day).title()}{' '*5}{currentTime} ┃")
-    print(f"┠{'─'*20}{'┨'}")
-    print(f"┃{ordinal(dateDay)} of {monthNumber(dateMonth)}{' '*3}{dateYear}  ┃") 
-    print(f"┗{'━'*20}{'┛'}")
+    weekdays = {
+        1: "mandag",
+        2: "tirsdag",
+        3: "onsdag",
+        4: "torsdag",
+        5: "fredag",
+        6: "lørdag",
+        0: "søndag"
+    }
+    daySpaces = {
+        "monday":    " "*7,
+        "tuesday":   " "*6,
+        "wednesday": " "*4,
+        "thursday":  " "*5,
+        "friday":    " "*7,
+        "saturday":  " "*7,
+        "sunday":    " "*7
+    }
+    monthSpaces = {
+        "January":   " "*4,
+        "February":  " "*3,
+        "March":     " "*6,
+        "April":     " "*6,
+        "May":       " "*8,
+        "June":      " "*7,
+        "July":      " "*7,
+        "August":    " "*5,
+        "September": " "*2,
+        "October":   " "*4,
+        "November":  " "*3,
+        "December":  " "*3
+    }
+    # Date Variables
+    date      = datetime.datetime.now()
+    dateYear  = date.year
+    dateMonth = date.month
+    dateDay   = date.day
+    # Prettifying Dates
+    day           = weekdays[datetime.datetime.now().weekday()]
+    betterDay     = f"{ordinal(dateDay)} of {monthNumber(dateMonth)}"
+    currentTime   = str(datetime.datetime.now())[11:16]
+    correctedTime = correcter(str(datetime.datetime.now())[11:16])
+    
+    if dateDay < 10:
+        betterDay += " "
+    if day in ["lørdag", "søndag"]:
+        day = "mandag"
+    print(f"┏{'━'*24}{'┓'}")
+    print(f"┃{translate(day).title()} {currentTime} {daySpaces[translate(day)]}{' '*4}┃") # Day name and time
+    print(f"┠{'─'*24}{'┨'}") # Line Splitter
+    print(f"┃{betterDay}{monthSpaces[monthNumber(dateMonth)]}{dateYear} ┃") # Day number, month and year
+    print(f"┗{'━'*24}{'┛'}")
+    
     splitter = f"\n{paddings['lineConnecterLeft']}{paddings['lineSplitter']*13}{paddings['lineConnecter']}{paddings['lineSplitter']*12}{paddings['lineConnecterRight']}"
 
     with open("lectures.json", "r") as lectureFile:
