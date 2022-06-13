@@ -12,7 +12,7 @@ from tools.helper import monthNumber
 from tools.helper import move
 from tools.helper import clear
 def main():
-    
+    clear() # Prepares the terminal for the program.
     paddings = {
         "horizontal": "━",
         "vertical": "┃",
@@ -102,6 +102,7 @@ def main():
                     currentLecture = v
                     continue
                 rprint(f"{prettyK} [red]{v}[/red]{paddings['vertical']}{splitter}")
+        # prevents the last print being a half cell 
         if k == "13:15 - 14:00":
             move(25,40)
             print("┗━━━━━━━━━━━━━┻━━━━━━━━━━━━┛")
@@ -142,5 +143,4 @@ if len(argv) >= 2:
         console.print(f"Command [red underline]\"{argv[1]}\"[/red underline] not found!")
         Help()
     exit()
-clear()
 main()
