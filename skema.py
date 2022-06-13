@@ -9,7 +9,10 @@ from tools.helper import translate
 from tools.helper import correcter
 from tools.helper import monthNumber
 
+from tools.helper import move
+from tools.helper import clear
 def main():
+    
     paddings = {
         "horizontal": "━",
         "vertical": "┃",
@@ -99,7 +102,10 @@ def main():
                     currentLecture = v
                     continue
                 rprint(f"{prettyK} [red]{v}[/red]{paddings['vertical']}{splitter}")
-        print(f"{paddings['leftSideBot']}{paddings['horizontal']*13}{paddings['connecterBot']}{paddings['horizontal']*12}{paddings['rightSideBot']}")
+        if k == "13:15 - 14:00":
+            move(25,40)
+            print("┗━━━━━━━━━━━━━┻━━━━━━━━━━━━┛")
+        #print(f"{paddings['leftSideBot']}{paddings['horizontal']*13}{paddings['connecterBot']}{paddings['horizontal']*12}{paddings['rightSideBot']}")
     return currentLecture 
 
 colorCommands = ["-c", "--color","--colors", "c", "color", "colors"]
@@ -136,4 +142,5 @@ if len(argv) >= 2:
         console.print(f"Command [red underline]\"{argv[1]}\"[/red underline] not found!")
         Help()
     exit()
+clear()
 main()

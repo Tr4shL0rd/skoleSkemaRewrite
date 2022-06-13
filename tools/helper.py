@@ -71,3 +71,16 @@ def monthNumber(monthNum):
     "12": "December"
     }
     return months[monthNum]
+
+# MISC
+def move(y=1,x=1):
+    #print("\033[%d;%dH" % (y, x))
+    print(f"\033[{y};{x}H")
+def clear():
+    import subprocess, platform
+    if platform.system()=="Windows":
+        subprocess.Popen("cls", shell=True).communicate() 
+    else:
+        print("\033c", end="")
+    #os.system("cls" if os.name == "nt" else "clear && clear")
+    
