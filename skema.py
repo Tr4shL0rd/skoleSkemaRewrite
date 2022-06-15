@@ -8,9 +8,9 @@ from tools.helper import ordinal
 from tools.helper import translate 
 from tools.helper import correcter
 from tools.helper import monthNumber
-
 from tools.helper import move
 from tools.helper import clear
+
 def main():
     clear() # Prepares the terminal for the program.
     paddings = {
