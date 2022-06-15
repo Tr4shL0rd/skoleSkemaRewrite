@@ -11,7 +11,7 @@ from tools.helper import monthNumber
 from tools.helper import move
 from tools.helper import clear
 
-def main():
+def main(day:int=None):
     clear() # Prepares the terminal for the program.
     paddings = {
         "horizontal": "━",
@@ -27,7 +27,7 @@ def main():
         "lineConnecterRight": "┨",
         "lineConnecterLeft": "┠",
         "misc": {
-            "topTable": "┏━━━━━━━━━━━━━┳━━━━━━━━━━━━┓",
+            "topTable":    "┏━━━━━━━━━━━━━┳━━━━━━━━━━━━┓",
             "bottomTable": "┗━━━━━━━━━━━━━┻━━━━━━━━━━━━┛",
         }
     }
@@ -72,30 +72,44 @@ def main():
         "pause":     "pause      ",
         "IU":        "IU         ",      
     }
-    nonLectures = ["pause", "runde"]
+    nonLectures = [
+        "pause", 
+        "runde"
+    ]
+    movePos = (25,40)
+    formatting = False
     # Date Variables
     date      = datetime.datetime.now()
     dateYear  = date.year
     dateMonth = date.month
     dateDay   = date.day
     # Prettifying Dates
-    day           = weekdays[datetime.datetime.now().weekday()]
+    day           = weekdays[day] if day else weekdays[datetime.datetime.now().weekday()] # if day is not specified, it will be the current day.
     betterDay     = f"{ordinal(dateDay)} of {monthNumber(dateMonth)}"
     currentTime   = str(datetime.datetime.now())[11:16]
     correctedTime = correcter(str(datetime.datetime.now())[11:16])
+    
     
     if dateDay < 10:
         betterDay += " "
     if day in ["lørdag", "søndag"]:
         day = "mandag"
-    print(f"┏{'━'*24}{'┓'}")
-    print(f"┃{translate(day).title()} {currentTime} {daySpaces[translate(day)]}{' '*4}┃") # Day name and time
-    print(f"┠{'─'*24}{'┨'}") # Line Splitter
-    print(f"┃{betterDay}{monthSpaces[monthNumber(dateMonth)]}{dateYear} ┃") # Day number, month and year
-    print(f"┗{'━'*24}{'┛'}")
-    
+    if not formatting:
+        print(f"┏{'━'*24}{'┓'}")
+        print(f"┃{translate(day).title()} {currentTime} {daySpaces[translate(day)]}{' '*4}┃") # Day name and time
+        print(f"┠{'─'*24}{'┨'}") # Line Splitter
+        print(f"┃{betterDay}{monthSpaces[monthNumber(dateMonth)]}{dateYear} ┃") # Day number, month and year
+        print(f"┗{'━'*24}{'┛'}")
+        movePos = (25,40)
+    else:
+        print(f"""
+┏━━━━━━━━━━━━━━━━━━━━━━━┓
+┃{translate(day).title()} {currentTime} {daySpaces[translate(day)]}{' '*3}┃
+┠───────────────────────┨
+┃{betterDay}{monthSpaces[monthNumber(dateMonth)]}{dateYear}┃
+┗━━━━━━━━━━━━━━━━━━━━━━━┛""")
+        movePos = (26,40)
     splitter = f"\n{paddings['lineConnecterLeft']}{paddings['lineSplitter']*13}{paddings['lineConnecter']}{paddings['lineSplitter']*12}{paddings['lineConnecterRight']}"
-
     with open("lectures.json", "r") as lectureFile:
         lectures = json.loads(lectureFile.read())
         currentLecture = ""
@@ -123,13 +137,17 @@ def main():
                 rprint(f"{prettyK} [red]{v}[/red]{paddings['vertical']}{splitter}")
         # prevents the last print being a half cell 
         if k == "13:15 - 14:00":
-            move(25,40)
+            move(movePos)
+            print(paddings["misc"]["bottomTable"])
+        elif k == "12:15 - 13:00" and day == "fredag":
+            move((21,40))
             print(paddings["misc"]["bottomTable"])
         #print(f"{paddings['leftSideBot']}{paddings['horizontal']*13}{paddings['connecterBot']}{paddings['horizontal']*12}{paddings['rightSideBot']}")
     return currentLecture 
 
 colorCommands = ["-c", "--color","--colors", "c", "color", "colors"]
 helpCommands  = ["-h", "--help", "h", "help"]
+nextCommands  = ["-n", "--next", "n", "next"]
 console = Console()
 table = Table()
 argv = list(map(lambda x: x.lower(), argv))
@@ -139,14 +157,19 @@ colorsUsed = {
     "red":  "Pauser",
 }
 commands = {
-    "--help": "Shows this message",
-    "--color": "Shows the colors used in the output",
+    "--help":   ("Shows this message",                  "skema.py --help"    ),
+    "--color":  ("Shows the colors used in the output", "skema.py --color"   ),
+    "--next n": ("Shows the lectures for the next day", "skema.py --next 1-5")
 }
 def Help():
+    # Adding columns
     table.add_column("Command")
     table.add_column("Description")
+    table.add_column("Usage")
+    # Adding Rows
     for k,v in commands.items():
-        table.add_row(f"{k}", f"{v}")
+        table.add_row(f"{k}", f"{v[0]}", f"{v[1]}")
+    
     console.print(table)
 
 if len(argv) >= 2:
@@ -158,8 +181,17 @@ if len(argv) >= 2:
         console.print(table)
     elif argv[1] in helpCommands:
         Help()
+    elif argv[1] in nextCommands:
+        if len(argv) == 3:
+            if int(argv[2]) > 5 or int(argv[2]) < 1:
+                rprint("[red]Error:[/red] The day must be between 1 and 5")
+                exit()
+            else:
+                rprint("[red]Error:[/red] Please specify a day")
+                Help()
+            main(int(argv[2]))
     else:
-        console.print(f"Command [red underline]\"{argv[1]}\"[/red underline] not found!")
+        console.print(f"[red]Error:[/red] Command [red underline]\"{argv[1]}\"[/red underline] not found!")
         Help()
     exit()
-main()
+main(None)
