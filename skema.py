@@ -25,7 +25,11 @@ def main():
         "lineSplitter": "─",
         "lineConnecter": "╂",
         "lineConnecterRight": "┨",
-        "lineConnecterLeft": "┠"
+        "lineConnecterLeft": "┠",
+        "misc": {
+            "topTable": "┏━━━━━━━━━━━━━┳━━━━━━━━━━━━┓",
+            "bottomTable": "┗━━━━━━━━━━━━━┻━━━━━━━━━━━━┛",
+        }
     }
     weekdays = {
         1: "mandag",
@@ -59,6 +63,16 @@ def main():
         "November":  " "*3,
         "December":  " "*3
     }
+    lectureNames = {
+        "MATEMATIK": "MATEMATIK  ",
+        "DANSK":     "DANSK      ",
+        "ENGELSK":   "ENGELSK    ",
+        "IDRÆT":     "IDRÆT      ",
+        "runde":     "runde      ",
+        "pause":     "pause      ",
+        "IU":        "IU         ",      
+    }
+    nonLectures = ["pause", "runde"]
     # Date Variables
     date      = datetime.datetime.now()
     dateYear  = date.year
@@ -85,18 +99,23 @@ def main():
     with open("lectures.json", "r") as lectureFile:
         lectures = json.loads(lectureFile.read())
         currentLecture = ""
-        print(f"{paddings['leftSideTop']}{paddings['horizontal']*13}{paddings['connecterTop']}{paddings['horizontal']*12}{paddings['rightSideTop']}")
+        #print(f"{paddings['leftSideTop']}{paddings['horizontal']*13}{paddings['connecterTop']}{paddings['horizontal']*12}{paddings['rightSideTop']}")
+        print(paddings["misc"]["topTable"])
         for k,v in lectures[day].items():
             prettyK = f"{paddings['vertical']}{k}{paddings['vertical']}"
-
-            if v.strip() not in ["pause","runde"]:
+            if  v.strip() not in ["pause", "runde"]:
+                # logic to check wether the lecture is entered in correctly
+                if v != v.upper():          
+                    v = v.upper()           
+            if len(v) != 11:                
+                v = f"{v}{' '*(11-len(v))}" 
+            if v.strip() not in nonLectures:
                 if k == correctedTime:
                     rprint(f"{prettyK} [cyan]{v}[/cyan]{paddings['vertical']}{splitter}")    
                     currentLecture = v
                     continue
                 rprint(f"{prettyK} [blue]{v}[/blue]{paddings['vertical']}{splitter}")
-            
-            if v.strip() in ["pause","runde"]:
+            if v.strip() in nonLectures:
                 if k == correctedTime:
                     rprint(f"{prettyK} [cyan]{v}[/cyan]{paddings['vertical']}{splitter}")    
                     currentLecture = v
@@ -105,7 +124,7 @@ def main():
         # prevents the last print being a half cell 
         if k == "13:15 - 14:00":
             move(25,40)
-            print("┗━━━━━━━━━━━━━┻━━━━━━━━━━━━┛")
+            print(paddings["misc"]["bottomTable"])
         #print(f"{paddings['leftSideBot']}{paddings['horizontal']*13}{paddings['connecterBot']}{paddings['horizontal']*12}{paddings['rightSideBot']}")
     return currentLecture 
 
