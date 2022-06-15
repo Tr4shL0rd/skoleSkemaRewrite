@@ -73,9 +73,9 @@ def monthNumber(monthNum):
     return months[monthNum]
 
 # MISC
-def move(y=1,x=1):
+def move(pos=(1,1)):
     #print("\033[%d;%dH" % (y, x))
-    print(f"\033[{y};{x}H")
+    print(f"\033[{pos[0]};{pos[1]}H")
 def clear():
     import subprocess, platform
     if platform.system()=="Windows":
